@@ -361,7 +361,7 @@
 					<div class="row timer-panel"></div>
 				</div>
 				<div class="floorPlan"
-					style="width: 100%; height: 100%; min-width: 996px; position: absolute; margin-left: 0.25rem"
+					style="width: 100%; height: 100%; min-width: 996px; position: relative; margin-left: 0.25rem"
 				></div>
 			</section>
 			<div class="sideTools"
@@ -845,15 +845,11 @@
 									e.preventDefault();
 									var iconId = ui.draggable.attr('id');
 									var top,left;
-									if(mobileCheck()){
-										//console.log('its a tablet');
-										left = (e.screenX - $floorPlan.offset().left + document.documentElement.scrollLeft)+'px';
-										top = (e.screenY -$floorPlan.offset().top + document.documentElement.scrollTop)+'px';
-									}else{
-										left = (e.clientX + document.body.scroll.left)+'px';
-										top = (e.clientY + document.body.scroll.top)+'px';
+									
+										left = (e.clientX + window.scrollX) - $floorPlan.offset().left +'px';
+										top = (e.clientY + window.scrollY)- $floorPlan.offset().top +'px';
 										
-									}
+									
 									var dropInfo ={desk:iconId, top:top, left:left};
 									//console.log(dropInfo);
 									var $newDesk = FurnitureUtils.newDeskOnDrop(dropInfo);
@@ -883,21 +879,28 @@
 	function makeDragRotateDelete($desk){
 		console.log('makeDragRotateDelete starting object: ');
 		console.log($desk);
-		$desk.draggable({containment:'.floorPlan',scroll:true,
+		$desk.draggable({containment: $floorPlan ,cursorAt:[0,0],
 						stop:function(e, ui){
-							/* var top, left;
-							left = (e.clientX + document.body.scroll.left)+'px';
-							top = (e.clientY + document.body.scroll.top)+'px'; */
-							$this = $(this);
-							/* $this.css('top', top);
-							$this.css('left', left); */
+							var $this = $(this);
+							 var top, left;
+							left = (e.clientX + window.scrollX) - $floorPlan.offset().left +'px';
+										top = (e.clientY + window.scrollY)- $floorPlan.offset().top +'px'; 
+							
+							 $this.css('top', top);
+							$this.css('left', left); 
+							//$this.css('display', 'block');
 							$this.data('desk').top = $this.css('top');
 							$this.data('desk').left = $this.css('left');
 						},
 						start:function(e , ui){
-							$this = $(this);
-							console.log('start drag this =');
-							console.log($this);
+							  var top, left;
+							  
+								left = (e.clientX + window.scrollX) - $floorPlan.offset().left +'px';
+											top = (e.clientY + window.scrollY)- $floorPlan.offset().top +'px'; 
+								
+								 $(ui.helper).css('top', top).css('left', left);
+								
+								//$(this).css('display', 'none');
 		
 						}//end start funciton				
 		});
@@ -1045,6 +1048,7 @@
 	}
 	
 	function editGroup(){
+		var activeGroup = '';/*store group id for group here*/
 		console.log('edit group called');
 		editState = 'group';
 		
