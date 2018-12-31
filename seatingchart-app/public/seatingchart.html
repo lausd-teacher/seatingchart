@@ -617,8 +617,9 @@
 	var $groupList = $('ul.groupList');
 	var $procList = $('ul.procList');
 	var state = 'home';//home, edit
+	var isEditing = false;//replace state
 	var editState = 'furniture';//posible editState: furniture,student,group,proc,info,station
-	var view = 'student';//possible view: student, group, proc,station,info
+	var viewState = 'student';//possible view: student, group, proc,station,info
 	var oldData;
 	var sortByLastName = false;
 	//page init like resize 
@@ -742,7 +743,31 @@
 	}//end function //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	);//end jquery init;//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	
 	/* ui function list */
+	
+	function home(){
+		isEditing = false;
+		view = 'student';
+		if($studentList.children().length < 1){
+			$studentList.append("<div><h5>No student to show</h5></div>")
+		}
+		$('.rosterStudent').click();
+		
+	};
+	
+	function doneHome(){
+		$homeTools.hide();
+		$homeToolSide.hide();
+		switch(view){
+			case 'group':doneGroupView();break;
+			case 'proc':doneProcView();break;
+			case 'station':doneStationView();break;
+			case 'info':doneInfoView();break;
+			default:doneStudentView();
+		}
+	};
+	
 	function drawGrid(){
 		console.log('called draw grid');
 		$floorPlan.empty();
@@ -800,7 +825,7 @@
 	}//end drawGrid///////
 	function edit(){
 		doneHome();
-		state = 'edit';
+		isEditing = true;
 		editState = 'furniture';
 		$editTools.show();
 		$editToolSide.show();
@@ -831,6 +856,16 @@
 		//fix editState
 		curChart = oldData;
 		doneEdit();
+	}
+	
+	function switchEditState(){
+		switch(editState){
+			case 'student':doneEditStudent();
+			case 'group':doneEditGroup();
+			case 'proc':doneEditProc();
+			case 'info':doneEditInfo();
+			default:doneEditFurniture();
+		}
 	}
 	
 	function editFurniture(){
@@ -1123,6 +1158,7 @@
 		}
 		
 	};
+	
 	function doneEditGroup(){
 	};
 	
@@ -1130,41 +1166,16 @@
 		editState = 'proc';
 	};
 	function doneEditProc(){};
-	function home(){
-		state = 'home';
-		view = 'student';
-		if($studentList.children().length < 1){
-			$studentList.append("<div><h5>No student to show</h5></div>")
-		}
-		$('.rosterStudent').click();
-		
-	};
+	
 	function editInfo(){
 		editState = 'info';
 	};
 	function doneEditInfo(){};
+	//end editing functions ------//////
 	
+	//View functions ---------//////////
 	
-	function switchEditState(){
-		switch(editState){
-			case 'student':doneEditStudent();
-			case 'group':doneEditGroup();
-			case 'proc':doneEditProc();
-			case 'info':doneEditInfo();
-			default:doneEditFurniture();
-		}
-	}
-	function doneHome(){
-		$homeTools.hide();
-		$homeToolSide.hide();
-		switch(view){
-			case 'group':doneGroupView();break;
-			case 'proc':doneProcView();break;
-			case 'station':doneStationView();break;
-			case 'info':doneInfoView();break;
-			default:doneStudentView();
-		}
-	};	function studentView(){
+	function studentView(){
 		/*TODO:add click functions to students
 		for showing studentActionPanel
 	*/
@@ -1230,6 +1241,10 @@ function doneStudentView(){
 	function doneStationView(){};
 	function infoView(){};
 	function doneInfoView(){};
+	
+	//End View function ----------- /////
+	
+	//Check functions hw & attendance //////
 	function hwCheck(){};
 	function doneHwCheck(){};
 	function submitHwCheck(){};
@@ -1238,6 +1253,7 @@ function doneStudentView(){
 	function doneAttendanceCheck(){};
 	function submitAttendance(){};
 	function cancelAttendance(){};
+	//end Check functions /////////////////
 	
 	//ajax functions - routine
 	function saveRoutine(routine){};
